@@ -44,10 +44,10 @@ public class PagosServiceImpl implements PagosService {
 	public Optional<PagosEntity> getPagosById(Long id) {
 		return pagosRepository.findById(id);
 	}
-	
+
 	@Override
 	public void savePagos(PagosEntity pagosEntity) {
-		pagosRepository.save(pagosEntity);		
+		pagosRepository.save(pagosEntity);
 	}
 
 }

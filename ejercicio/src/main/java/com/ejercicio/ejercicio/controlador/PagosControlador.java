@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ejercicio.ejercicio.entity.PagosEntity;
 import com.ejercicio.ejercicio.modelo.Pagos;
-import com.ejercicio.ejercicio.repository.PagosRepository;
 import com.ejercicio.ejercicio.service.PagosService;
-import com.ejercicio.publisher.PagosKafkaPublisher;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,10 +26,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PagosControlador {
 	@Autowired
 	private PagosService pagosService;
-	
+
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;
-	
+
 	@Value("${spring.kafka.producer.topic}")
 	String topic;
 
@@ -56,10 +54,10 @@ public class PagosControlador {
 
 		PagosEntity pagosEntity = pagosService.getPagosById(id).get();
 		ObjectMapper objectMapper = new ObjectMapper();
-		
+
 		if (pagosEntity == null) {
 			return ResponseEntity.ok("No se encontró pago");
-		}else {
+		} else {
 			pagosEntity.setEstatusPago(estatusPago);
 			pagosService.savePagos(pagosEntity);
 			String entity = null;
@@ -70,8 +68,8 @@ public class PagosControlador {
 				e.printStackTrace();
 			}
 			kafkaTemplate.send(topic, entity);
-			
-		}//hhtstatus 204
+
+		} // hhtstatus 204
 		return ResponseEntity.ok("Operación exitosa");
 	}
 }

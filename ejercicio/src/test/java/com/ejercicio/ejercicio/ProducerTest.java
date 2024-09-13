@@ -17,33 +17,30 @@ import com.ejercicio.config.KafkaConfig;
 
 @SpringBootTest
 @EmbeddedKafka
-@ContextConfiguration(classes = {KafkaConfig.class})
+@ContextConfiguration(classes = { KafkaConfig.class })
 @AutoConfigureMockMvc
 public class ProducerTest {
-	
+
 	@Autowired
 	KafkaTemplate templateMock;
-	
+
 	@Autowired
-    private MockMvc mockMvc;
-	
+	private MockMvc mockMvc;
+
 	@Test
 	void testSendEvent() {
-	      //omitted lines regarding second assert that works
-	      var dto = templateMock.send("pagos_topic","A new event");
-	      assertThat(dto).isNotNull();
-	      //there is a second assert here that passes, nothing to do with kafka
+		var dto = templateMock.send("pagos_topic", "A new event");
+		assertThat(dto).isNotNull();
 	}
-	
+
 	@Test
 	void actualizar() throws Exception {
-		int id=22;
+		int id = 22;
 		String estatusPago = "Pendiente";
-		  // Act
-        ResultActions result = mockMvc.perform(patch("/pagos/modificar/{id}/{estatusPago}", id, estatusPago));
-        assertThat(result).isNotNull();
-	
+		// Act
+		ResultActions result = mockMvc.perform(patch("/pagos/modificar/{id}/{estatusPago}", id, estatusPago));
+		assertThat(result).isNotNull();
+
 	}
-	
 
 }
