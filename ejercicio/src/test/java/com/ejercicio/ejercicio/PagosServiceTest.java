@@ -3,17 +3,18 @@ package com.ejercicio.ejercicio;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,15 +78,6 @@ public class PagosServiceTest {
 	}
 
 	@Test
-	void consultaTest() {
-
-		when(pagosRepository.findAll()).thenReturn(List.of(pagosEntity));
-
-		List<PagosEntity> response = pagosService.getPagos();
-		assertNotNull(response);
-	}
-
-	@Test
 	void consultaPorIdTest() {
 
 		when(pagosRepository.findById(1L)).thenReturn(Optional.of(pagosEntity));
@@ -111,5 +103,29 @@ public class PagosServiceTest {
 
 		verify(pagosRepository).save(pagosEntity);
 
+	}
+
+	@Test
+	void consultaEstatusTest() {
+		Long id = 1L;
+		String estatusPago = "Pagado";
+		ResponseEntity<String> estatus = new ResponseEntity<>(estatusPago, HttpStatus.OK);
+
+		when(pagosRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(pagosEntity));
+
+		ResponseEntity<String> response = pagosService.getStatusById(id);
+
+		assertEquals(estatus, response);
+	}
+
+	@Test
+	void consultaEstatusNoEncontradoTest() {
+		Long id = 2L;
+
+		when(pagosRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+
+		ResponseEntity<String> response = pagosService.getStatusById(id);
+
+		assertNull(response);
 	}
 }

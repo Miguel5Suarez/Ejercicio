@@ -1,10 +1,8 @@
 package com.ejercicio.ejercicio.controlador;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,14 +36,9 @@ public class PagosControlador {
 		return pagosService.guardar(pagos);
 	}
 
-	@GetMapping("/obtener")
-	public List<PagosEntity> getPagos() {
-		return pagosService.getPagos();
-	}
-
-	@GetMapping("/obtener/{id}")
-	public Optional<PagosEntity> getPagosById(@PathVariable("id") Long id) {
-		return pagosService.getPagosById(id);
+	@GetMapping("/obtener/estatus/{id}")
+	public ResponseEntity<String> getStatusById(@PathVariable("id") Long id) {
+		return pagosService.getStatusById(id);
 	}
 
 	@PatchMapping("/modificar/{id}/{estatusPago}")
@@ -56,7 +49,7 @@ public class PagosControlador {
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		if (pagosEntity == null) {
-			return ResponseEntity.ok("No se encontró pago");
+			return new ResponseEntity<>("No se encontró pago", HttpStatus.NO_CONTENT);
 		} else {
 			pagosEntity.setEstatusPago(estatusPago);
 			pagosService.savePagos(pagosEntity);

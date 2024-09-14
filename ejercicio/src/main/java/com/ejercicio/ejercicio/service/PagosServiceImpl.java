@@ -1,6 +1,5 @@
 package com.ejercicio.ejercicio.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +35,6 @@ public class PagosServiceImpl implements PagosService {
 	}
 
 	@Override
-	public List<PagosEntity> getPagos() {
-		return pagosRepository.findAll();
-	}
-
-	@Override
 	public Optional<PagosEntity> getPagosById(Long id) {
 		return pagosRepository.findById(id);
 	}
@@ -48,6 +42,14 @@ public class PagosServiceImpl implements PagosService {
 	@Override
 	public void savePagos(PagosEntity pagosEntity) {
 		pagosRepository.save(pagosEntity);
+	}
+
+	@Override
+	public ResponseEntity<String> getStatusById(Long id) {
+		Optional<PagosEntity> pagos = pagosRepository.findById(id);
+
+		return new ResponseEntity<>(pagos.get().getEstatusPago(), HttpStatus.OK);
+
 	}
 
 }

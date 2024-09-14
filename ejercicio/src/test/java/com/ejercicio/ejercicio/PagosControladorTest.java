@@ -1,27 +1,27 @@
 package com.ejercicio.ejercicio;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.ejercicio.ejercicio.controlador.PagosControlador;
 import com.ejercicio.ejercicio.entity.PagosEntity;
 import com.ejercicio.ejercicio.modelo.Pagos;
+import com.ejercicio.ejercicio.repository.PagosRepository;
 import com.ejercicio.ejercicio.service.PagosService;
 
 @SpringBootTest
@@ -31,8 +31,12 @@ public class PagosControladorTest {
 	private PagosControlador pagosControlador;
 	@Mock
 	private PagosService pagosService;
+	@Mock
+	private PagosRepository pagosRepository;
+
 	private Pagos pagos;
 	private PagosEntity pagosEntity;
+	String estatus = "estatus";
 
 	@BeforeEach
 	public void setup() {
@@ -63,25 +67,15 @@ public class PagosControladorTest {
 	}
 
 	@Test
-	void consultaTest() {
-		List<PagosEntity> response = pagosControlador.getPagos();
-		assertNotNull(response);
+	void consultaEstatusTest() {
+		Long id = 1L;
+		String estatusPago = "Pagado";
+		ResponseEntity<String> estatus = new ResponseEntity<>(estatusPago, HttpStatus.OK);
+
+		when(pagosService.getStatusById(Mockito.anyLong())).thenReturn(estatus);
+
+		ResponseEntity<String> response = pagosControlador.getStatusById(id);
+
+		assertEquals(estatus, response);
 	}
-
-	@Test
-	void consultaPorIdTest() {
-		when(pagosService.getPagosById(1L)).thenReturn(Optional.of(pagosEntity));
-
-		Optional<PagosEntity> response = pagosControlador.getPagosById(1L);
-		assertNotNull(response);
-	}
-
-	@Test
-	void consultaPorIdEmptyTest() {
-		when(pagosService.getPagosById(1L)).thenReturn(Optional.empty());
-
-		Optional<PagosEntity> response = pagosControlador.getPagosById(1L);
-		assertThat(response.isEmpty());
-	}
-
 }
