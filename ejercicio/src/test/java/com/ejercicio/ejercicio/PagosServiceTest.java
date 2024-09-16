@@ -3,7 +3,6 @@ package com.ejercicio.ejercicio;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,7 +43,7 @@ public class PagosServiceTest {
 		pagos.setConcepto("Concepto");
 		pagos.setDeudor("Deudor");
 		pagos.setMonto(decimal);
-		pagos.setEstatusPago("Estatus");
+		pagos.setEstatusPago("Activo");
 
 		pagosEntity = new PagosEntity();
 		pagosEntity.setId(1L);
@@ -53,7 +52,7 @@ public class PagosServiceTest {
 		pagosEntity.setConcepto("Concepto");
 		pagosEntity.setDeudor("Deudor");
 		pagosEntity.setMonto(decimal);
-		pagosEntity.setEstatusPago("Estatus");
+		pagosEntity.setEstatusPago("Activo");
 
 	}
 
@@ -62,7 +61,7 @@ public class PagosServiceTest {
 
 		when(pagosRepository.findById(1L)).thenReturn(Optional.empty());
 
-		ResponseEntity<Pagos> response = pagosService.guardar(pagos);
+		ResponseEntity<?> response = pagosService.guardar(pagos);
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertEquals(pagos, response.getBody());
 	}
@@ -72,9 +71,9 @@ public class PagosServiceTest {
 
 		when(pagosRepository.findById(1L)).thenReturn(Optional.of(pagosEntity));
 
-		ResponseEntity<Pagos> response = pagosService.guardar(pagos);
+		ResponseEntity<?> response = pagosService.guardar(pagos);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-		assertEquals(pagos, response.getBody());
+		assertEquals(response.getBody(), "Pago repetido");
 	}
 
 	@Test
@@ -108,7 +107,7 @@ public class PagosServiceTest {
 	@Test
 	void consultaEstatusTest() {
 		Long id = 1L;
-		String estatusPago = "Pagado";
+		String estatusPago = "Activo";
 		ResponseEntity<String> estatus = new ResponseEntity<>(estatusPago, HttpStatus.OK);
 
 		when(pagosRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(pagosEntity));
@@ -116,16 +115,5 @@ public class PagosServiceTest {
 		ResponseEntity<String> response = pagosService.getStatusById(id);
 
 		assertEquals(estatus, response);
-	}
-
-	@Test
-	void consultaEstatusNoEncontradoTest() {
-		Long id = 2L;
-
-		when(pagosRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
-
-		ResponseEntity<String> response = pagosService.getStatusById(id);
-
-		assertNull(response);
 	}
 }

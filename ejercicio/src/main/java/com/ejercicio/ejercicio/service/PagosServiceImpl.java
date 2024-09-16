@@ -17,10 +17,10 @@ public class PagosServiceImpl implements PagosService {
 	private PagosRepository pagosRepository;
 
 	@Override
-	public ResponseEntity<Pagos> guardar(Pagos pagos) {
+	public ResponseEntity<?> guardar(Pagos pagos) {
 		Optional<PagosEntity> pagosEntity = getPagosById(pagos.getId());
 		if (!pagosEntity.isEmpty()) {
-			return new ResponseEntity<>(pagos, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>("Pago repetido", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		PagosEntity pagosEnt = new PagosEntity();
 		pagosEnt.setId(pagos.getId());
@@ -50,6 +50,11 @@ public class PagosServiceImpl implements PagosService {
 
 		return new ResponseEntity<>(pagos.get().getEstatusPago(), HttpStatus.OK);
 
+	}
+
+	@Override
+	public PagosEntity estatusPorId(Long id) {
+		return pagosRepository.getStatusById(id);
 	}
 
 }
