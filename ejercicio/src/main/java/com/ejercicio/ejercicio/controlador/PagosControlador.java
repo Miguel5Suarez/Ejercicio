@@ -32,7 +32,7 @@ public class PagosControlador {
 	String topic;
 
 	@PostMapping("/agregar")
-	public ResponseEntity<Pagos> guardar(@RequestBody Pagos pagos) {
+	public ResponseEntity<?> guardar(@RequestBody Pagos pagos) {
 		return pagosService.guardar(pagos);
 	}
 
@@ -45,24 +45,22 @@ public class PagosControlador {
 	public ResponseEntity<?> updatePagosById(@PathVariable("id") Long id,
 			@PathVariable("estatusPago") String estatusPago) {
 
-		PagosEntity pagosEntity = pagosService.getPagosById(id).get();
-		ObjectMapper objectMapper = new ObjectMapper();
+		PagosEntity pagosEntity = pagosService.estatusPorId(id);
 
 		if (pagosEntity == null) {
 			return new ResponseEntity<>("No se encontró pago", HttpStatus.NO_CONTENT);
 		} else {
 			pagosEntity.setEstatusPago(estatusPago);
 			pagosService.savePagos(pagosEntity);
-			String entity = null;
+			ObjectMapper objectMapper = new ObjectMapper();
 			try {
-				entity = objectMapper.writeValueAsString(pagosEntity);
+				String pagosEn = objectMapper.writeValueAsString(pagosEntity);
+				kafkaTemplate.send(topic, pagosEn);
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return new ResponseEntity<>("Error al enviar mensaje", HttpStatus.NO_CONTENT);
 			}
-			kafkaTemplate.send(topic, entity);
 
-		} // hhtstatus 204
+		}
 		return ResponseEntity.ok("Operación exitosa");
 	}
 }

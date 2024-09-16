@@ -36,6 +36,7 @@ public class PagosControladorTest {
 
 	private Pagos pagos;
 	private PagosEntity pagosEntity;
+
 	String estatus = "estatus";
 
 	@BeforeEach
@@ -58,11 +59,12 @@ public class PagosControladorTest {
 		pagosEntity.setDeudor("Deudor");
 		pagosEntity.setMonto(BigDecimal.valueOf(10.0));
 		pagosEntity.setEstatusPago("Estatus");
+
 	}
 
 	@Test
 	public void guadarTest() {
-		ResponseEntity<Pagos> response = pagosControlador.guardar(pagos);
+		ResponseEntity<?> response = pagosControlador.guardar(pagos);
 		assertNull(response);
 	}
 
